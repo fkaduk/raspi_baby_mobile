@@ -1,0 +1,52 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["main", "master"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+        python-version: ["3.12"]
+
+    # Linux only by default. Use ${{ matrix.os }} for other OSes.
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      # Generally following uv docs:
+
+      - name: Checkout (official GitHub action)
+        uses: actions/checkout@v4
+        with:
+          # Important for versioning plugins:
+          fetch-depth: 0
+
+      - name: Install uv (official Astral action)
+        uses: astral-sh/setup-uv@v5
+        with:
+          # Update this as needed:
+          version: "0.7.3"
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up Python (using uv)
+        run: uv python install
+
+      - name: Install all dependencies
+        run: uv sync --all-extras --dev
+
+      - name: Run linting
+        run: uv run python devtools/lint.py
+
+      - name: Run tests
+        run: uv run pytest
