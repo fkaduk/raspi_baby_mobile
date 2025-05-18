@@ -2,15 +2,10 @@
 
 [project.urls]
 Repository = "https://github.com/fkaduk/raspi_baby_mobile"
-# Homepage = "https://..."
-# Documentation = "https://..."
 
 [project]
 name = "raspi_baby_mobile"
 description = "changeme"
-authors = [
-    { name="FKaduk", email="changeme" },
-]
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11,<4.0"
