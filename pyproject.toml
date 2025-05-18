@@ -11,30 +11,10 @@ license = "MIT"
 requires-python = ">=3.11,<4.0"
 dynamic = ["version"]
 
-# https://pypi.org/classifiers/
-# Adjust as needed:
-classifiers = [
-    # Adjust as needed:
-    "Development Status :: 4 - Beta",
-    # "Development Status :: 5 - Production/Stable",
-    "Intended Audience :: Developers",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Typing :: Typed",
-    # Include this to avoid accidentally publishing to PyPI:
-    # "Private :: Do Not Upload",
-]
-
-
 # ---- Main dependencies ----
 
 dependencies = [
 ]
-
 
 # ---- Dev dependencies ----
 
@@ -50,9 +30,7 @@ dev = [
 ]
 
 [project.scripts]
-# Add script entry points here:
 raspi_baby_mobile = "raspi_baby_mobile:main"
-
 
 # ---- Build system ----
 
@@ -77,7 +55,6 @@ bump = "true"
 [tool.hatch.build.targets.wheel]
 # The source location for the package.
 packages = ["src/raspi_baby_mobile"]
-
 
 # ---- Settings ----
 
