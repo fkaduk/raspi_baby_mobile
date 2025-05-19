@@ -6,7 +6,7 @@ sleep 10 #wait for network to connect
 
 REPO_URL="https://github.com/fkaduk/raspi_baby_mobile.git"
 REPO_DIR="${HOME}/raspi_baby_mobile"
-BRANCH="add-startup-script"
+BRANCH="main"
 
 if [ ! -f "${HOME}/.local/bin/uv" ]; then
     curl -LsSf https://astral.sh/uv/install.sh | sh
