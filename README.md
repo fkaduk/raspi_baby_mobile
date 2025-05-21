@@ -19,6 +19,19 @@ For development workflows, see [development.md](development.md).
 *This project was built from
 [simple-modern-uv](https://github.com/jlevy/simple-modern-uv).*
 
+## Hardware Setup
+
+### wiring table
+
+| Net        | From Part      | From Pin                      | To Part        | To Pin |
+|------------|----------------|------------------------------|----------------|--------|
+| GND        | Raspberry Pi   | any GND pin                  | Ground Rail    | —      |
+| GND        | Passive Buzzer | “–” (- lead)                 | Ground Rail    | —      |
+| GND        | Servo          | GND                          | Ground Rail    | —      |
+| BUZZ_SIG   | Raspberry Pi   | GPIO 18   | 220 Ω Resistor | pin 1  |
+| BUZZ_SIG   | 220 Ω Resistor | pin 2                        | Passive Buzzer | “+”    |
+| SERVO_SIG  | Raspberry Pi   | GPIO 12  | Servo          | Signal |
+| 5 V        | Servo          | +5 V                         | 5 V Rail       | —      |
 
 ## Installation
 
