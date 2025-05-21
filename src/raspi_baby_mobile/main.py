@@ -1,34 +1,45 @@
+#!/usr/bin/env python3
 import time
+
 import RPi.GPIO as GPIO
 
 BUZZER_PIN = 18
+SERVO_PIN = 12
 
-REFERENCE_NOTE = 2000  # Hz
-REFERENCE_DURATION = 0.1  # seconds
 
-TEST_NOTE = 500  # Hz
-TEST_DURATION = 0.2  # seconds
+def poweron_selftest():
+    """4 beeps + 4 servo twitches (L-R-L-R) to verify wiring."""
+    buzzer = GPIO.PWM(BUZZER_PIN, 2_000)
+    buzzer.start(8)
+    for _ in range(4):
+        time.sleep(0.10)
+        buzzer.ChangeDutyCycle(0)
+        time.sleep(0.05)
+        buzzer.ChangeDutyCycle(8)
+    buzzer.stop()
 
-VOLUME = 0.05  # Range: 0.0 (silent) to 1.0 (max)
-# Convert volume to duty cycle (percentage)
-DUTY_CYCLE = VOLUME * 100
+    servo = GPIO.PWM(SERVO_PIN, 50)
+    servo.start(7.5)
+    for i in range(4):
+        duty = 6.0 if i % 2 == 0 else 9.0
+        servo.ChangeDutyCycle(duty)
+        time.sleep(0.25)
+        servo.ChangeDutyCycle(7.5)
+        time.sleep(0.25)
+    servo.stop()
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(BUZZER_PIN, GPIO.OUT)
 
-pwm = GPIO.PWM(BUZZER_PIN, REFERENCE_NOTE)
-pwm.start(DUTY_CYCLE)
+def main():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup([BUZZER_PIN, SERVO_PIN], GPIO.OUT)
 
-try:
-    for i in range(5):
-        print(i)
-        pwm.ChangeFrequency(REFERENCE_NOTE)
-        pwm.ChangeDutyCycle(DUTY_CYCLE)
-        time.sleep(REFERENCE_DURATION)
+    try:
+        poweron_selftest()
 
-        pwm.ChangeFrequency(TEST_NOTE)
-        pwm.ChangeDutyCycle(DUTY_CYCLE)
-        time.sleep(TEST_DURATION)
-finally:
-    pwm.stop()
-    GPIO.cleanup()
+        #     ...
+    finally:
+        GPIO.cleanup()
+
+
+if __name__ == "__main__":
+    main()
