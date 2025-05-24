@@ -14,6 +14,7 @@ dynamic = ["version"]
 # ---- Main dependencies ----
 
 dependencies = [
+    "mediapipe>=0.10.21",
     "opencv-python>=4.11.0.86",
     "rpi-gpio>=0.7.1",
 ]
