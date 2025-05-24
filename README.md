@@ -6,6 +6,13 @@ delete this message!
 Below are general setup instructions that you may remove or keep and adapt for your
 project.\]\]\]
 
+## roadmap
+
+- [ ] document hardware and parts
+- [ ] warning beep if no face detected
+- [ ] make servo rotation linearly dependent on face position
+- [ ] add reviewed documentation
+
 * * *
 
 ## Project Docs
