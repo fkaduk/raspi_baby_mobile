@@ -547,6 +547,7 @@ dependencies = [
     { name = "mediapipe", version = "0.10.18", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'aarch64' and sys_platform == 'linux'" },
     { name = "mediapipe", version = "0.10.21", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
     { name = "opencv-python-headless" },
+    { name = "rpi-gpio" },
 ]
 
 [package.dev-dependencies]
@@ -565,6 +566,7 @@ dev = [
 requires-dist = [
     { name = "mediapipe", specifier = ">=0.10.18" },
     { name = "opencv-python-headless", specifier = ">=4.11.0.86" },
+    { name = "rpi-gpio", specifier = ">=0.7.1" },
 ]
 
 [package.metadata.requires-dev]
@@ -591,6 +593,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/a1/53/830aa4c3066a8ab0a
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0d/9b/63f4c7ebc259242c89b3acafdb37b41d1185c07ff0011164674e9076b491/rich-14.0.0-py3-none-any.whl", hash = "sha256:1c9491e1951aac09caffd42f448ee3d04e58923ffe14993f6e83068dc395d7e0", size = 243229, upload-time = "2025-03-30T14:15:12.283Z" },
 ]
+
+[[package]]
+name = "rpi-gpio"
+version = "0.7.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c4/0f/10b524a12b3445af1c607c27b2f5ed122ef55756e29942900e5c950735f2/RPi.GPIO-0.7.1.tar.gz", hash = "sha256:cd61c4b03c37b62bba4a5acfea9862749c33c618e0295e7e90aa4713fb373b70", size = 29090, upload-time = "2022-02-06T15:15:06.022Z" }
 
 [[package]]
 name = "ruff"
