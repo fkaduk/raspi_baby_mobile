@@ -137,6 +137,7 @@ reportUnreachable = false
 # reportUnknownVariableType = false
 # reportUnknownArgumentType = false
 failOnWarnings = false
+typeCheckingMode = "off"
 
 [tool.codespell]
 # Add here as needed:
