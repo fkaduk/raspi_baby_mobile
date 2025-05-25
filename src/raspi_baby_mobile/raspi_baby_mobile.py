@@ -1,4 +1,8 @@
+import math
 import time
+
+import cv2
+import numpy as np
 
 
 def buzzer_beep(buzzer, count):
@@ -42,3 +46,40 @@ def poweron_selftest(buzzer, servo):
         servo.ChangeDutyCycle(7.5)
         time.sleep(0.25)
     servo.stop()
+
+
+def extract_head_orientation_from_frame(frame_bgr, facemesh):
+    """
+    Fast yaw-only estimate from a single BGR frame.
+    Expects an *open* mediapipe.solutions.face_mesh.FaceMesh instance.
+    Returns {"yaw": degrees}
+    """
+
+    # helper: convert normalized landmark → pixel coordinates
+    def _px(lmk, w, h):
+        return np.array([lmk.x * w, lmk.y * h], dtype=np.float32)
+
+    rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
+    res = facemesh.process(rgb)
+    if not res.multi_face_landmarks:
+        raise RuntimeError("No face detected")
+
+    # landmark indices (kept local)
+    idx_nose_tip = 1  # nose tip
+    idx_eye_left = 33  # outer left eye corner
+    idx_eye_right = 263  # outer right eye corner
+
+    lmk = res.multi_face_landmarks[0].landmark
+    h, w = rgb.shape[:2]
+
+    nose = _px(lmk[idx_nose_tip], w, h)
+    eye_l = _px(lmk[idx_eye_left], w, h)
+    eye_r = _px(lmk[idx_eye_right], w, h)
+
+    # horizontal displacement of nose, scaled by half the eye distance
+    eye_mid_x = (eye_l[0] + eye_r[0]) * 0.5
+    ipd = abs(eye_r[0] - eye_l[0]) + 1e-6  # avoid divide-by-zero
+    ratio = (nose[0] - eye_mid_x) / (0.5 * ipd)
+
+    yaw_deg = math.degrees(math.asin(max(-1.0, min(1.0, ratio))))
+    return {"yaw": yaw_deg}
