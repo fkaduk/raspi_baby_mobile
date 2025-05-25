@@ -12,6 +12,8 @@ if [ ! -f "${HOME}/.local/bin/uv" ]; then
     curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
 
-rm -rf "${REPO_DIR}" #sometimes broken repo due to cutting power
+rm -rf "${REPO_DIR}" #cutting power sometimes breaks repo
 git clone -b ${BRANCH} ${REPO_URL}
-uv run "${REPO_DIR}/src/raspi_baby_mobile/main.py"
+cd ${REPO_DIR}
+uv sync
+uv run "/src/raspi_baby_mobile/main.py"
