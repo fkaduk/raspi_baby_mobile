@@ -83,3 +83,24 @@ def extract_head_orientation_from_frame(frame_bgr, facemesh):
 
     yaw_deg = math.degrees(math.asin(max(-1.0, min(1.0, ratio))))
     return {"yaw": yaw_deg}
+
+
+def yaw_to_servo_rotation(yaw_deg, dead_band=10, end_band=35):
+    """
+    Map yaw angle (degrees) to a normalised rotation score in [-100, 100].
+    """
+    if abs(yaw_deg) <= dead_band:
+        return 0.0
+
+    if yaw_deg < 0:  # head turned left
+        if yaw_deg <= -end_band:
+            return -100.0
+        return (yaw_deg + dead_band) / -(end_band - dead_band) * 100
+    else:  # head turned right
+        if yaw_deg >= end_band:
+            return 100.0
+        return (yaw_deg - dead_band) / (end_band - dead_band) * 100
+
+
+def rotation_to_duty(rotation_score):
+    return 7.5 + (rotation_score / 100.0) * 1.5  # 7.5 % ±1.5 %
