@@ -8,12 +8,14 @@ name = "raspi_baby_mobile"
 description = "changeme"
 readme = "README.md"
 license = "MIT"
-requires-python = "3.11"
+requires-python = ">=3.11,<3.12"
 dynamic = ["version"]
 
 # ---- Main dependencies ----
 
 dependencies = [
+    "mediapipe>=0.10.18",
+    "opencv-python-headless>=4.11.0.86",
 ]
 
 # ---- Dev dependencies ----
@@ -27,10 +29,17 @@ dev = [
     "rich>=14.0.0",
     "basedpyright>=1.29.1",
     "funlog>=0.2.1",
+    "pytest-ruff>=0.4.1",
 ]
 
 [project.scripts]
 raspi_baby_mobile = "raspi_baby_mobile:main"
+
+
+[tool.uv]
+required-environments = [
+  "sys_platform == 'linux' and platform_machine == 'aarch64'",
+]
 
 # ---- Build system ----
 
