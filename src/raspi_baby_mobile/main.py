@@ -30,6 +30,7 @@ def main(camera_index=0, poweron_selftest=True):
 
     facemesh = mp.solutions.face_mesh.FaceMesh(max_num_faces=1)
     print("Facemesh initialized")
+    servo.start(7.5)
     while True:
         ok, frame = cap.read()
         if not ok:
@@ -47,8 +48,9 @@ def main(camera_index=0, poweron_selftest=True):
 
         rotation = raspi_baby_mobile.yaw_to_servo_rotation(yaw)
         duty = raspi_baby_mobile.rotation_to_duty(rotation)
+        print(f"Setting servo to: {duty:.2f}")
         servo.ChangeDutyCycle(duty)
-        time.sleep(0.02)
+        time.sleep(1)
 
 
 if __name__ == "__main__":

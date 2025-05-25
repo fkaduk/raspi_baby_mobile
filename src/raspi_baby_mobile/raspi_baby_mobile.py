@@ -26,9 +26,8 @@ def buzzer_notification(buzzer, type):
             buzzer_beep(buzzer, 3)
             time.sleep(1)
     elif type == "no_face":
-        while True:
-            buzzer_beep(buzzer, 1)
-            time.sleep(1)
+        buzzer_beep(buzzer, 1)
+        time.sleep(1)
     else:
         TypeError("Unsupported buzzer error type")
 
@@ -103,4 +102,6 @@ def yaw_to_servo_rotation(yaw_deg, dead_band=10, end_band=35):
 
 
 def rotation_to_duty(rotation_score):
-    return 7.5 + (rotation_score / 100.0) * 1.5  # 7.5 % ±1.5 %
+    assert rotation_score >= -100
+    assert rotation_score <= 100
+    return 7.5 + (rotation_score / 100.0) * 1.5
