@@ -8,7 +8,7 @@ name = "raspi_baby_mobile"
 description = "changeme"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.11,<4.0"
+requires-python = "3.11"
 dynamic = ["version"]
 
 # ---- Main dependencies ----
