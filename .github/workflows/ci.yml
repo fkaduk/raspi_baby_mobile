@@ -16,10 +16,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: ["ubuntu-latest"]
+        os: ["ubuntu-latest", " ubuntu-22.04-arm"]
         python-version: ["3.11"]
-
-    # Linux only by default. Use ${{ matrix.os }} for other OSes.
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -35,7 +33,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           # Update this as needed:
-          version: "0.7.3"
+          version: "0.7.8"
           enable-cache: true
           python-version: ${{ matrix.python-version }}
 
