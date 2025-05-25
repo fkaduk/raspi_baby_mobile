@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
+import time
+
 import cv2
+import mediapipe as mp
 import RPi.GPIO as GPIO
 
 import raspi_baby_mobile
@@ -19,11 +22,33 @@ def main(camera_index=0, poweron_selftest=True):
         raspi_baby_mobile.poweron_selftest(buzzer, servo)
 
     cap = cv2.VideoCapture(camera_index)
+    cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
+
     if not cap.isOpened():
         print(f"❌ Could not open camera {camera_index}")
         raspi_baby_mobile.buzzer_notification(buzzer, "no_camera")
 
-    GPIO.cleanup()
+    facemesh = mp.solutions.face_mesh.FaceMesh(max_num_faces=1)
+    print("Facemesh initialized")
+    while True:
+        ok, frame = cap.read()
+        if not ok:
+            continue
+            print("Frame not captured")
+
+        try:
+            print("Extracting facial landmarks...")
+            yaw = raspi_baby_mobile.extract_head_orientation_from_frame(frame, facemesh)["yaw"]
+            print(f"Detected yaw: {yaw:.2f}°")
+        except RuntimeError:
+            print("Could not detect face")
+            servo.ChangeDutyCycle(7.5)
+            continue
+
+        rotation = raspi_baby_mobile.yaw_to_servo_rotation(yaw)
+        duty = raspi_baby_mobile.rotation_to_duty(rotation)
+        servo.ChangeDutyCycle(duty)
+        time.sleep(0.02)
 
 
 if __name__ == "__main__":
