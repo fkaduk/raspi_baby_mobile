@@ -44,7 +44,7 @@ def poweron_selftest(buzzer, servo):
         time.sleep(0.25)
         servo.ChangeDutyCycle(7.5)
         time.sleep(0.25)
-    servo.stop()
+    # servo.stop() #stopping will make the servo unresponsive for that session
 
 
 def extract_head_orientation_from_frame(frame_bgr, facemesh):
