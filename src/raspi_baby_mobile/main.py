@@ -42,8 +42,9 @@ def main(camera_index=0, poweron_selftest=True):
             yaw = raspi_baby_mobile.extract_head_orientation_from_frame(frame, facemesh)["yaw"]
             print(f"Detected yaw: {yaw:.2f}°")
         except RuntimeError:
-            print("Could not detect face")
             servo.ChangeDutyCycle(7.5)
+            raspi_baby_mobile.buzzer_notification(buzzer, "no_face")
+            print("Could not detect face")
             continue
 
         rotation = raspi_baby_mobile.yaw_to_servo_rotation(yaw)
