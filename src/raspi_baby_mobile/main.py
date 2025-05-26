@@ -47,11 +47,14 @@ def main(camera_index=0, poweron_selftest=True):
             print("Could not detect face")
             continue
 
-        rotation = raspi_baby_mobile.yaw_to_servo_rotation(yaw)
-        duty = raspi_baby_mobile.rotation_to_duty(rotation)
-        print(f"Setting servo to: {duty:.2f}")
-        servo.ChangeDutyCycle(duty)
-        time.sleep(1)
+        try:
+            rotation = raspi_baby_mobile.yaw_to_servo_rotation(yaw)
+            duty = raspi_baby_mobile.rotation_to_duty(rotation)
+            print(f"Setting servo to: {duty:.2f}")
+            servo.ChangeDutyCycle(duty)
+            time.sleep(1)
+        except Exception:
+            print("Error setting servo")
 
 
 if __name__ == "__main__":
