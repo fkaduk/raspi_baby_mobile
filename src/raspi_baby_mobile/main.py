@@ -52,9 +52,10 @@ def main(camera_index=0, poweron_selftest=True):
             duty = raspi_baby_mobile.rotation_to_duty(rotation)
             print(f"Setting servo to: {duty:.2f}")
             servo.ChangeDutyCycle(duty)
-            time.sleep(1)
         except Exception:
             print("Error setting servo")
+
+        time.sleep(0.5)
 
 
 if __name__ == "__main__":
