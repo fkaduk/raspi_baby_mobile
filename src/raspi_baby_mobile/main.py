@@ -36,7 +36,7 @@ def main(camera_index=0, poweron_selftest=True):
             min_detection_confidence=0.5,
             min_tracking_confidence=0.5,
         )
-        print("Facemesh initialised")
+        print("Facemesh initialised", flush=True)
         pi.set_servo_pulsewidth(SERVO_PIN, 1500)  # center
 
         while True:
@@ -52,6 +52,7 @@ def main(camera_index=0, poweron_selftest=True):
             except RuntimeError:  # no face
                 pi.set_servo_pulsewidth(SERVO_PIN, 1500)
                 rbm.buzzer_notification(pi, BUZZER_PIN, "no_face")
+                print("No face detected", flush=True)
 
     finally:
         pi.set_servo_pulsewidth(SERVO_PIN, 0)
