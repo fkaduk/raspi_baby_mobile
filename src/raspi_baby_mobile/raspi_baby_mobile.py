@@ -92,11 +92,10 @@ def yaw_to_servo_rotation(yaw_deg, dead_band=10, end_band=35):
     """
     if abs(yaw_deg) <= dead_band:
         return 0.0
-
     if yaw_deg < 0:  # head turned left
         if yaw_deg <= -end_band:
             return -100.0
-        return (yaw_deg + dead_band) / -(end_band - dead_band) * 100
+        return -(yaw_deg + dead_band) / -(end_band - dead_band) * 100
     else:  # head turned right
         if yaw_deg >= end_band:
             return 100.0
