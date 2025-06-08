@@ -45,6 +45,7 @@ def main(camera_index=0, poweron_selftest=True):
                 continue
 
             try:
+                frame = cv2.rotate(frame, cv2.ROTATE_180)
                 yaw = rbm.extract_head_orientation_from_frame(frame, facemesh)["yaw"]
                 rotation = rbm.yaw_to_servo_rotation(yaw)
                 pulse = rbm.rotation_to_pulse(rotation)
