@@ -13,7 +13,7 @@ SERVO_PIN = 12
 def main(camera_index=0, poweron_selftest=True):
     pi = pigpio.pi()
     if not pi.connected:
-        print("❌ pigpiod not running, start with sudo systemctl start pigpiod")
+        print("❌ pigpiod not running, start with `sudo systemctl start pigpiod`")
         return
     try:
         if poweron_selftest:

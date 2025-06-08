@@ -5,14 +5,10 @@ import cv2
 import numpy as np
 
 
-def duty_to_pulse(duty_pct):
-    # 5–10 % @ 50 Hz  →  1000 µs per 5 %
-    return int(duty_pct * 200)  # e.g. 7.5 % → 1500 µs
-
-
-def rotation_to_pulse(score):
-    # score ∈ [-100, 100]  →  1200-1800 µs
-    return int(1500 + score * 3)
+def rotation_to_pulse(score, multiplier=3):
+    assert score >= -100
+    assert score <= 100
+    return int(1500 + score * multiplier)
 
 
 def buzzer_beep(pi, pin, count):
@@ -46,12 +42,11 @@ def poweron_selftest(pi, servo_pin, buzzer_pin):
     buzzer_notification(pi, buzzer_pin, "startup")
 
     for i in range(4):
-        pulse = duty_to_pulse(6.0 if i % 2 == 0 else 9.0)
+        pulse = 1400 if i % 2 == 0 else 1600
         pi.set_servo_pulsewidth(servo_pin, pulse)  # start pulse
         time.sleep(0.25)
-        pi.set_servo_pulsewidth(servo_pin, 1500)  # centre
+        pi.set_servo_pulsewidth(servo_pin, 1500)  # stop
         time.sleep(0.25)
-    # leave the servo streaming so it remains responsive
 
 
 def extract_head_orientation_from_frame(frame_bgr, facemesh):
@@ -106,9 +101,3 @@ def yaw_to_servo_rotation(yaw_deg, dead_band=10, end_band=35):
         if yaw_deg >= end_band:
             return 100.0
         return (yaw_deg - dead_band) / (end_band - dead_band) * 100
-
-
-def rotation_to_duty(rotation_score):
-    assert rotation_score >= -100
-    assert rotation_score <= 100
-    return 7.5 + (rotation_score / 100.0) * 1.5
