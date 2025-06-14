@@ -1,8 +1,12 @@
-# PiMobile
+# Raspi-Baby-Mobile
 
 A Raspberry Pi–powered system that brings interactivity to a baby mobile.
-Through detecting head movement and translating it to to rotation movement of a servo, a visual display is controlled.
-The result is a one‑to‑one, response‑contingent link between a baby’s own movement and the outside world.
+
+![](./doc/baby_yaw_mobile_rotation.svg)
+
+Through detecting head movement and translating it to to rotation movement of a servo,
+a visual display is controlled.
+The result is a one‑to‑one, response‑contingent link between a baby’s movement and the outside world.
 
 ## Background
 
