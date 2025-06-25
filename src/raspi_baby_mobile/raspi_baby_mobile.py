@@ -5,46 +5,48 @@ import cv2
 import numpy as np
 
 
-def buzzer_beep(buzzer, count):
+def rotation_to_pulse(score, multiplier=3):
+    assert score >= -100
+    assert score <= 100
+    return int(1500 + score * multiplier)
+
+
+def buzzer_beep(pi, pin, count):
     for _ in range(count):
-        buzzer.start(8)
+        pi.hardware_PWM(pin, 2000, 500_000)  # 2 kHz, 50 % duty
         time.sleep(0.2)
-        buzzer.ChangeDutyCycle(0)
+        pi.hardware_PWM(pin, 0, 0)  # stop PWM
         time.sleep(0.2)
-    buzzer.stop()
 
 
-def buzzer_notification(buzzer, type):
-    if type == "startup":
-        buzzer_beep(buzzer, 4)
-    elif type == "no_servo":
+def buzzer_notification(pi, pin, kind):
+    if kind == "startup":
+        buzzer_beep(pi, pin, 4)
+    elif kind == "no_servo":
         while True:
-            buzzer_beep(buzzer, 2)
+            buzzer_beep(pi, pin, 2)
             time.sleep(1)
-    elif type == "no_camera":
+    elif kind == "no_camera":
         while True:
-            buzzer_beep(buzzer, 3)
+            buzzer_beep(pi, pin, 3)
             time.sleep(1)
-    elif type == "no_face":
-        buzzer_beep(buzzer, 1)
+    elif kind == "no_face":
+        buzzer_beep(pi, pin, 1)
         time.sleep(1)
     else:
-        TypeError("Unsupported buzzer error type")
+        raise TypeError("Unsupported buzzer error type")
 
 
-def poweron_selftest(buzzer, servo):
-    """4 beeps + 4 servo twitches (L-R-L-R) to verify wiring."""
+def poweron_selftest(pi, servo_pin, buzzer_pin):
+    """4 beeps + 4 servo twitches (L-R-L-R)."""
+    buzzer_notification(pi, buzzer_pin, "startup")
 
-    buzzer_notification(buzzer=buzzer, type="startup")
-
-    servo.start(7.5)
     for i in range(4):
-        duty = 6.0 if i % 2 == 0 else 9.0
-        servo.ChangeDutyCycle(duty)
+        pulse = 1400 if i % 2 == 0 else 1600
+        pi.set_servo_pulsewidth(servo_pin, pulse)  # start pulse
         time.sleep(0.25)
-        servo.ChangeDutyCycle(7.5)
+        pi.set_servo_pulsewidth(servo_pin, 1500)  # stop
         time.sleep(0.25)
-    # servo.stop() #stopping will make the servo unresponsive for that session
 
 
 def extract_head_orientation_from_frame(frame_bgr, facemesh):
@@ -90,18 +92,11 @@ def yaw_to_servo_rotation(yaw_deg, dead_band=10, end_band=35):
     """
     if abs(yaw_deg) <= dead_band:
         return 0.0
-
     if yaw_deg < 0:  # head turned left
         if yaw_deg <= -end_band:
             return -100.0
-        return (yaw_deg + dead_band) / -(end_band - dead_band) * 100
+        return -(yaw_deg + dead_band) / -(end_band - dead_band) * 100
     else:  # head turned right
         if yaw_deg >= end_band:
             return 100.0
         return (yaw_deg - dead_band) / (end_band - dead_band) * 100
-
-
-def rotation_to_duty(rotation_score):
-    assert rotation_score >= -100
-    assert rotation_score <= 100
-    return 7.5 + (rotation_score / 100.0) * 1.5

@@ -1,61 +1,63 @@
 #!/usr/bin/env python3
 
-import time
-
 import cv2
 import mediapipe as mp
-import RPi.GPIO as GPIO
+import pigpio
 
-import raspi_baby_mobile
+import raspi_baby_mobile as rbm
 
 BUZZER_PIN = 18
 SERVO_PIN = 12
 
 
 def main(camera_index=0, poweron_selftest=True):
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup([BUZZER_PIN, SERVO_PIN], GPIO.OUT)
-    buzzer = GPIO.PWM(BUZZER_PIN, 2_000)
-    servo = GPIO.PWM(SERVO_PIN, 50)
+    pi = pigpio.pi()
+    if not pi.connected:
+        print("❌ pigpiod not running, start with `sudo systemctl start pigpiod`")
+        return
+    try:
+        if poweron_selftest:
+            rbm.poweron_selftest(pi, SERVO_PIN, BUZZER_PIN)
 
-    if poweron_selftest:
-        raspi_baby_mobile.poweron_selftest(buzzer, servo)
+        cap = cv2.VideoCapture(camera_index)
+        cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        cap.set(cv2.CAP_PROP_FPS, 30)
+        cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        if not cap.isOpened():
+            rbm.buzzer_notification(pi, BUZZER_PIN, "no_camera")
+            raise SystemExit(f"❌ Could not open camera {camera_index}")
 
-    cap = cv2.VideoCapture(camera_index)
-    cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
+        facemesh = mp.solutions.face_mesh.FaceMesh(
+            static_image_mode=False,
+            max_num_faces=1,
+            refine_landmarks=False,  # 468 pts instead of 478
+            min_detection_confidence=0.5,
+            min_tracking_confidence=0.5,
+        )
+        print("Facemesh initialised", flush=True)
+        pi.set_servo_pulsewidth(SERVO_PIN, 1500)  # center
 
-    if not cap.isOpened():
-        print(f"❌ Could not open camera {camera_index}")
-        raspi_baby_mobile.buzzer_notification(buzzer, "no_camera")
+        while True:
+            ok, frame = cap.read()
+            if not ok:
+                continue
 
-    facemesh = mp.solutions.face_mesh.FaceMesh(max_num_faces=1)
-    print("Facemesh initialized")
-    servo.start(7.5)
-    while True:
-        ok, frame = cap.read()
-        if not ok:
-            continue
-            print("Frame not captured")
+            try:
+                frame = cv2.rotate(frame, cv2.ROTATE_180)
+                yaw = rbm.extract_head_orientation_from_frame(frame, facemesh)["yaw"]
+                rotation = rbm.yaw_to_servo_rotation(yaw)
+                pulse = rbm.rotation_to_pulse(rotation)
+                pi.set_servo_pulsewidth(SERVO_PIN, pulse)
+            except RuntimeError:  # no face
+                pi.set_servo_pulsewidth(SERVO_PIN, 1500)
+                rbm.buzzer_notification(pi, BUZZER_PIN, "no_face")
+                print("No face detected", flush=True)
 
-        try:
-            print("Extracting facial landmarks...")
-            yaw = raspi_baby_mobile.extract_head_orientation_from_frame(frame, facemesh)["yaw"]
-            print(f"Detected yaw: {yaw:.2f}°")
-        except RuntimeError:
-            servo.ChangeDutyCycle(7.5)
-            raspi_baby_mobile.buzzer_notification(buzzer, "no_face")
-            print("Could not detect face")
-            continue
-
-        try:
-            rotation = raspi_baby_mobile.yaw_to_servo_rotation(yaw)
-            duty = raspi_baby_mobile.rotation_to_duty(rotation)
-            print(f"Setting servo to: {duty:.2f}")
-            servo.ChangeDutyCycle(duty)
-        except Exception:
-            print("Error setting servo")
-
-        time.sleep(0.5)
+    finally:
+        pi.set_servo_pulsewidth(SERVO_PIN, 0)
+        pi.stop()
 
 
 if __name__ == "__main__":
