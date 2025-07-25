@@ -29,5 +29,5 @@ for i in $(seq 1 $TRIES); do
     exit 1
   fi
 done
-
-uv run "./src/raspi_baby_mobile/main.py"
+cd $REPO_DIR
+uv run "src/raspi_baby_mobile/main.py"
