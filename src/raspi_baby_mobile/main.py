@@ -51,7 +51,6 @@ def main(camera_index=0, poweron_selftest=True):
                 pulse = rbm.rotation_to_pulse(rotation)
                 pi.set_servo_pulsewidth(SERVO_PIN, pulse)
             except RuntimeError:  # no face
-                pi.set_servo_pulsewidth(SERVO_PIN, 1500)
                 rbm.buzzer_notification(pi, BUZZER_PIN, "no_face")
                 print("No face detected", flush=True)
 
