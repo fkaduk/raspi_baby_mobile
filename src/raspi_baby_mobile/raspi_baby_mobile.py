@@ -86,7 +86,7 @@ def extract_head_orientation_from_frame(frame_bgr, facemesh):
     return {"yaw": yaw_deg}
 
 
-def yaw_to_servo_rotation(yaw_deg, dead_band=10, end_band=35):
+def yaw_to_servo_rotation(yaw_deg, dead_band=2, end_band=35):
     """
     Map yaw angle (degrees) to a normalised rotation score in [-100, 100].
     """
