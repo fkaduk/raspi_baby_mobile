@@ -9,7 +9,7 @@ description = "changeme"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11,<3.12"
-dynamic = ["version"]
+version = "0.1.0"
 
 # ---- Main dependencies ----
 
